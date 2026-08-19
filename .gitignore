@@ -1,0 +1,44 @@
+# ---- Dependencies ----
+node_modules/
+.pnp
+.pnp.js
+
+# ---- Build output ----
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# ---- Env & secrets (never commit) ----
+.env
+.env.*
+!.env.example
+
+# ---- Vercel ----
+.vercel/
+
+# ---- Tooling local / skills ----
+.agents/
+
+# ---- TypeScript build info ----
+*.tsbuildinfo
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Editor / OS ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ---- Prisma / generated ----
+prisma/migrations/dev.db*
+*.db
+*.sqlite
+coverage/

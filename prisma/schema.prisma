@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum AppointmentStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum UserRole {
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         UserRole @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  durationMin Int
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+
+  @@index([active])
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  name       String
+  phone      String
+  whatsapp   String?
+  email      String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  appointments Appointment[]
+
+  @@index([phone])
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  serviceId   String
+  customerId  String
+  slotStart   DateTime
+  slotEnd     DateTime
+  status      AppointmentStatus @default(CONFIRMED)
+  priceAtBooking Int
+  durationAtBooking Int
+  nameSnapshot String
+  phoneSnapshot String
+  whatsappSnapshot String?
+  emailSnapshot  String?
+  notes         String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  service  Service  @relation(fields: [serviceId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  // Regla crítica: una sola reserva CONFIRMADA por horario.
+  // Se aplica con un índice único parcial (solo filas CONFIRMED):
+  //   CREATE UNIQUE INDEX "one_confirmed_per_slot"
+  //   ON "Appointment" ("slotStart") WHERE "status" = 'CONFIRMED';
+  // Ver prisma/migrations/0001_init/migration.sql
+  @@index([slotStart, status])
+  @@index([slotStart])
+  @@index([customerId])
+  @@index([serviceId])
+}
+
+model BusinessHour {
+  id        String @id @default(cuid())
+  // 0 = Domingo, 1 = Lunes ... 6 = Sábado
+  dayOfWeek Int    @unique
+  openTime  String // "HH:mm" 24h
+  closeTime String // "HH:mm" 24h
+  isOpen    Boolean @default(true)
+}
+
+model BlockedTime {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  startTime String // "HH:mm"
+  endTime   String   // "HH:mm"
+  reason    String?
+  allDay    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([date])
+}
+
+model BusinessSetting {
+  key   String @id
+  value String
+}
