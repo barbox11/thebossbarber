@@ -119,6 +119,12 @@ onMounted(() => {
           >
             Hecho por barbox11
           </a>
+          <RouterLink
+            to="/admin/login"
+            class="mt-2 text-[10px] uppercase tracking-[0.25em] text-muted-2 transition-colors hover:text-brand-hover"
+          >
+            Acceso administrador
+          </RouterLink>
         </div>
       </div>
     </div>
