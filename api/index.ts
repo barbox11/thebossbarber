@@ -1,8 +1,8 @@
-import createApp from '../server/app'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+// @ts-nocheck
+import createApp from './_server.mjs'
 
 const app = createApp()
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
   await app(req, res)
 }
