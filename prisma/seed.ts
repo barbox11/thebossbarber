@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { DEFAULT_HOURS, DEFAULT_SERVICES, DEFAULT_SETTINGS } from '../api/db/types'
+import { DEFAULT_HOURS, DEFAULT_SERVICES, DEFAULT_SETTINGS } from '../server/db/types'
 
 const prisma = new PrismaClient()
 

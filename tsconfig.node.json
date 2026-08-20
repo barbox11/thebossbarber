@@ -12,5 +12,5 @@
     "noUnusedParameters": true,
     "types": ["node"]
   },
-  "include": ["api/**/*.ts", "prisma/**/*.ts", "shared/**/*.ts", "vite.config.ts"]
+  "include": ["api/**/*.ts", "server/**/*.ts", "prisma/**/*.ts", "shared/**/*.ts", "vite.config.ts"]
 }

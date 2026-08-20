@@ -42,3 +42,7 @@ prisma/migrations/dev.db*
 *.db
 *.sqlite
 coverage/
+
+.vercel
+.env.local
+.env.*.local

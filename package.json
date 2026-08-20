@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "dev:api": "tsx watch api/server.ts",
+    "dev:api": "tsx watch server/server.ts",
     "dev:all": "concurrently -n api,web -c red,white \"npm:dev:api\" \"npm:dev\"",
     "build": "npm run typecheck && vite build",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && vue-tsc --noEmit -p tsconfig.node.json",

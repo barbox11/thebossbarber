@@ -29,7 +29,8 @@ Landing premium + sistema de reservas en línea + panel administrativo para una 
 ## Estructura del proyecto
 
 ```
-api/          Backend (Express) — rutas, lib, db (Prisma/Memoria)
+api/          Único archivo de entrada serverless (api/index.ts → 1 sola función en Vercel)
+server/       Backend (Express) — app, rutas, lib y db (Prisma/Memoria)
 prisma/       Esquema de base de datos, seed y migraciones
 public/       Estáticos: imágenes optimizadas, favicon, robots.txt, sitemap.xml
 scripts/      Scripts de soporte (optimización de imágenes)

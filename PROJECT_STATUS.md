@@ -99,7 +99,7 @@ Documento de seguimiento del proyecto. Se actualiza periódicamente durante el d
 ## DECISIONES
 
 1. **Stack**: Vue 3 + TypeScript + Vite + Vue Router + Pinia + Tailwind CSS v4 en el frontend; Express + Prisma en `/api`; PostgreSQL/Neon en producción; Vercel para el despliegue.
-2. **API dentro de Vercel**: el backend vive en la carpeta `api/` y se sirve como funciones serverless (`vercel.json` reescribe `/api/*` → `/api/index`).
+2. **API dentro de Vercel**: el backend vive en `server/` y `api/index.ts` es el único archivo de entrada serverless (`vercel.json` reescribe `/api/*` → `/api/index`). Mantener UN solo archivo en `api/` es obligatorio: el plan Hobby de Vercel limita a 12 funciones y antes cada `.ts` de `api/` contaba como una.
 3. **Store dual**: sin `DATABASE_URL`, la API usa un store en memoria con serialización de reservas. Permite desarrollo y preview sin base de datos, pero no persiste datos (no usar en producción).
 4. **Una reserva por horario en la BD**: índice único parcial + exclusión `tstzrange` + transacción serializable. La defensa real contra dobles reservas está a nivel de base de datos, no solo en Vue.
 5. **Precio congelado**: `priceAtBooking` y `durationAtBooking` se guardan en la cita; los reportes no dependen del precio actual del servicio.
