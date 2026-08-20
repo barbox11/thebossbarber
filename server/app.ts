@@ -6,7 +6,6 @@ import publicRoutes from './routes/public'
 import authRoutes from './routes/auth'
 import bookingRoutes from './routes/bookings'
 import adminRoutes from './routes/admin'
-import dbSetupRoutes from './routes/dbsetup'
 
 export function createApp() {
   const app = express()
@@ -28,7 +27,6 @@ export function createApp() {
   app.use('/api/auth', authRoutes)
   app.use('/api', bookingRoutes)
   app.use('/api/admin', adminRoutes)
-  app.use('/api', dbSetupRoutes)
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada.' })
