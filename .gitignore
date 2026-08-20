@@ -44,6 +44,9 @@ prisma/migrations/dev.db*
 *.sqlite
 coverage/
 
+# ---- Datos temporales (no commitear) ----
+db-backup.json
+
 .vercel
 .env.local
 .env.*.local
