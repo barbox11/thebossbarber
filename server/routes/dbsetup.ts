@@ -13,7 +13,13 @@ router.post('/db-setup', async (req, res) => {
   const out: Record<string, number | string> = {}
   try {
     out.migration = 'ok'
-    await prisma.$executeRawUnsafe(MIGRATION_SQL)
+    const statements = MIGRATION_SQL
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+    for (const stmt of statements) {
+      await prisma.$executeRawUnsafe(stmt + ';')
+    }
 
     await prisma.$transaction(async (tx) => {
       for (const u of BACKUP.users as any[]) {
