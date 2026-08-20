@@ -77,7 +77,66 @@ onMounted(load)
       No hay reservas con este estado.
     </div>
 
-    <div v-else class="overflow-x-auto border border-line">
+    <div v-else class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <article
+        v-for="a in visible"
+        :key="a.id"
+        class="border border-line bg-card"
+      >
+        <div class="flex items-start justify-between gap-3 border-b border-line p-4">
+          <div class="min-w-0">
+            <p class="truncate font-semibold text-white">{{ a.nameSnapshot }}</p>
+            <p class="mt-0.5 text-xs text-muted">{{ a.phoneSnapshot }}</p>
+            <p class="mt-2 text-xs text-muted">{{ a.service?.name ?? '—' }}</p>
+          </div>
+          <span
+            class="shrink-0 px-2 py-1 text-[10px] font-bold uppercase tracking-wider"
+            :class="
+              a.status === 'CONFIRMED'
+                ? 'bg-brand/15 text-brand-hover'
+                : a.status === 'COMPLETED'
+                  ? 'bg-white/10 text-white'
+                  : 'bg-white/5 text-muted-2'
+            "
+          >
+            {{ statusLabels[a.status] }}
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 p-4">
+          <div class="flex items-baseline gap-3">
+            <span class="font-display text-xl text-white">{{ formatTime12(a.time) }}</span>
+            <span class="text-sm text-muted">{{ dateLabel(a.slotStart) }}</span>
+          </div>
+          <span class="font-display text-lg text-white">{{ formatCOP(a.priceAtBooking) }}</span>
+        </div>
+
+        <div class="flex gap-2 border-t border-line p-3">
+          <button
+            v-if="a.status === 'CONFIRMED'"
+            type="button"
+            class="flex flex-1 items-center justify-center gap-1.5 border border-line-2 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:border-brand hover:text-brand-hover"
+            :aria-label="`Marcar como completada la reserva de ${a.nameSnapshot}`"
+            @click="changeStatus(a, 'COMPLETED')"
+          >
+            <AppIcon name="check" :size="14" />
+            Completar
+          </button>
+          <button
+            v-if="a.status !== 'CANCELLED' && a.status !== 'COMPLETED'"
+            type="button"
+            class="flex flex-1 items-center justify-center gap-1.5 border border-line-2 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:border-brand hover:text-brand-hover"
+            :aria-label="`Cancelar la reserva de ${a.nameSnapshot}`"
+            @click="changeStatus(a, 'CANCELLED')"
+          >
+            <AppIcon name="close" :size="14" />
+            Cancelar
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <div v-else class="hidden overflow-x-auto border border-line md:block">
       <table class="w-full min-w-[720px] text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">

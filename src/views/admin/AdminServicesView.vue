@@ -94,7 +94,43 @@ onMounted(load)
 
     <div v-else-if="error" class="border border-brand bg-brand-soft p-5 text-sm text-white">{{ error }}</div>
 
-    <div v-else class="overflow-x-auto border border-line">
+    <div v-else class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <article v-for="s in services" :key="s.id" class="border border-line bg-card">
+        <div class="flex items-start justify-between gap-3 p-4">
+          <div class="min-w-0">
+            <p class="truncate font-semibold text-white" :class="s.active ? '' : 'opacity-50'">{{ s.name }}</p>
+            <p class="mt-1 line-clamp-2 text-xs text-muted">{{ s.description }}</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="s.active"
+            :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
+            class="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+            :class="s.active ? 'bg-brand' : 'bg-card-2'"
+            @click="toggleActive(s)"
+          >
+            <span class="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform" :class="s.active ? 'translate-x-5' : 'translate-x-0.5'" />
+          </button>
+        </div>
+        <div class="flex items-center justify-between gap-3 border-t border-line p-4">
+          <div class="flex items-baseline gap-2">
+            <span class="font-display text-lg text-white">{{ formatCOP(s.price) }}</span>
+            <span class="text-xs text-muted">{{ minutesToLabel(s.durationMin) }}</span>
+          </div>
+          <button
+            type="button"
+            class="flex h-8 w-8 items-center justify-center border border-line-2 text-muted transition-colors hover:border-brand hover:text-brand-hover"
+            :aria-label="`Editar ${s.name}`"
+            @click="openEdit(s)"
+          >
+            <AppIcon name="edit" :size="14" />
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <div v-else class="hidden overflow-x-auto border border-line md:block">
       <table class="w-full min-w-[640px] text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">

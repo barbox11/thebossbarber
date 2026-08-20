@@ -56,7 +56,25 @@ function lastLabel(iso: string | null): string {
 
     <div v-else-if="error" class="border border-brand bg-brand-soft p-5 text-sm text-white">{{ error }}</div>
 
-    <div v-else class="overflow-x-auto border border-line">
+<div v-else class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <article v-for="c in visible" :key="c.id" class="border border-line bg-card p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="truncate font-semibold text-white">{{ c.name }}</p>
+            <p class="mt-0.5 truncate text-xs text-muted">{{ c.email ?? 'Sin correo' }}</p>
+          </div>
+          <span class="shrink-0 font-display text-lg text-white">{{ c.bookingsCount }}</span>
+        </div>
+        <p class="mt-3 text-sm text-muted">{{ c.phone }}</p>
+        <p v-if="c.whatsapp && c.whatsapp !== c.phone" class="text-xs text-muted-2">WhatsApp: {{ c.whatsapp }}</p>
+        <div class="mt-4 flex items-center justify-between border-t border-line pt-3">
+          <span class="text-xs text-muted-2">Última cita · {{ lastLabel(c.lastBookingAt) }}</span>
+          <span class="font-display text-lg text-white">{{ formatCOP(c.totalSpent) }}</span>
+        </div>
+      </article>
+    </div>
+
+    <div v-else class="hidden overflow-x-auto border border-line md:block">
       <table class="w-full min-w-[720px] text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">
@@ -83,7 +101,6 @@ function lastLabel(iso: string | null): string {
           </tr>
         </tbody>
       </table>
-      <p v-if="visible.length === 0" class="p-8 text-center text-sm text-muted-2">No se encontraron clientes.</p>
     </div>
   </div>
 </template>
