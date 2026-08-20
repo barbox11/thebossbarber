@@ -18,7 +18,37 @@ import type {
 } from './types'
 import type { AdminRecord, BlockedInput, HourInput, ServiceInput, Store } from './store'
 
-const prisma = new PrismaClient()
+function isConnError(e: unknown): boolean {
+  const code = (e as { code?: string } | undefined)?.code
+  return code === 'P1001' || code === 'P1002' || code === 'P1017' || code === 'P2024'
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+async function withRetry<T>(fn: () => Promise<T>, attempts = 8): Promise<T> {
+  let lastErr: unknown
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      lastErr = e
+      if (isConnError(e) && i < attempts) {
+        await sleep(1500 * i)
+        continue
+      }
+      throw e
+    }
+  }
+  throw lastErr
+}
+
+const prisma = new PrismaClient().$extends({
+  query: {
+    async $allOperations({ args, query }) {
+      return withRetry(() => query(args))
+    },
+  },
+})
 
 export class PrismaStore implements Store {
   mode = 'postgres' as const
@@ -30,22 +60,24 @@ export class PrismaStore implements Store {
     const count = await prisma.service.count()
     if (count > 0) return
 
-    await prisma.$transaction(async (tx) => {
-      for (const s of DEFAULT_SERVICES) {
-        await tx.service.create({ data: { ...s } })
-      }
-      for (const h of DEFAULT_HOURS) {
-        await tx.businessHour.create({ data: { ...h } })
-      }
-      for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
-        await tx.businessSetting.upsert({
-          where: { key },
-          create: { key, value },
-          update: {},
-        })
-      }
-      await this.ensureAdmin(tx)
-    })
+    await withRetry(() =>
+      prisma.$transaction(async (tx) => {
+        for (const s of DEFAULT_SERVICES) {
+          await tx.service.create({ data: { ...s } })
+        }
+        for (const h of DEFAULT_HOURS) {
+          await tx.businessHour.create({ data: { ...h } })
+        }
+        for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
+          await tx.businessSetting.upsert({
+            where: { key },
+            create: { key, value },
+            update: {},
+          })
+        }
+        await this.ensureAdmin(tx as unknown as Prisma.TransactionClient)
+      }),
+    )
   }
 
   private async ensureAdmin(tx: Prisma.TransactionClient): Promise<void> {
@@ -88,13 +120,15 @@ export class PrismaStore implements Store {
   }
 
   async upsertHours(input: HourInput[]): Promise<BusinessHourRecord[]> {
-    const tx = await prisma.$transaction(
-      input.map((h) =>
-        prisma.businessHour.upsert({
-          where: { dayOfWeek: h.dayOfWeek },
-          create: h,
-          update: h,
-        }),
+    const tx = await withRetry(() =>
+      prisma.$transaction(
+        input.map((h) =>
+          prisma.businessHour.upsert({
+            where: { dayOfWeek: h.dayOfWeek },
+            create: h,
+            update: h,
+          }),
+        ),
       ),
     )
     return tx.sort((a, b) => a.dayOfWeek - b.dayOfWeek)
@@ -132,13 +166,15 @@ export class PrismaStore implements Store {
   }
 
   async updateSettings(patch: Partial<BusinessSettings>): Promise<BusinessSettings> {
-    const tx = await prisma.$transaction(
-      Object.entries(patch).map(([key, value]) =>
-        prisma.businessSetting.upsert({
-          where: { key },
-          create: { key, value: String(value) },
-          update: { value: String(value) },
-        }),
+    const tx = await withRetry(() =>
+      prisma.$transaction(
+        Object.entries(patch).map(([key, value]) =>
+          prisma.businessSetting.upsert({
+            where: { key },
+            create: { key, value: String(value) },
+            update: { value: String(value) },
+          }),
+        ),
       ),
     )
     const map = Object.fromEntries(tx.map((r) => [r.key, r.value]))
@@ -166,8 +202,9 @@ export class PrismaStore implements Store {
 
   async createBooking(input: BookingInput): Promise<BookingResult> {
     try {
-      const result = await prisma.$transaction(
-        async (tx) => {
+      const result = await withRetry(() =>
+        prisma.$transaction(
+          async (tx) => {
           const service = await tx.service.findFirst({ where: { id: input.serviceId, active: true } })
           if (!service) {
             throw new BookingError('not_found', 'Servicio no encontrado.')
@@ -258,7 +295,8 @@ export class PrismaStore implements Store {
           return appointment
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-      )
+      ),
+    )
       return { ok: true, appointment: result as unknown as AppointmentRecord }
     } catch (e) {
       if (e instanceof BookingError) {
