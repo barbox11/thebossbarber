@@ -94,8 +94,9 @@ onMounted(load)
 
     <div v-else-if="error" class="border border-brand bg-brand-soft p-5 text-sm text-white">{{ error }}</div>
 
-    <div v-else class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      <article v-for="s in services" :key="s.id" class="border border-line bg-card">
+    <div v-else>
+      <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <article v-for="s in services" :key="s.id" class="border border-line bg-card">
         <div class="flex items-start justify-between gap-3 p-4">
           <div class="min-w-0">
             <p class="truncate font-semibold text-white" :class="s.active ? '' : 'opacity-50'">{{ s.name }}</p>
@@ -130,7 +131,7 @@ onMounted(load)
       </article>
     </div>
 
-    <div v-else class="hidden overflow-x-auto border border-line md:block">
+    <div class="hidden overflow-x-auto border border-line md:block">
       <table class="w-full min-w-[640px] text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">
@@ -176,6 +177,7 @@ onMounted(load)
           </tr>
         </tbody>
       </table>
+    </div>
     </div>
 
     <Teleport to="body">

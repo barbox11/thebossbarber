@@ -56,8 +56,9 @@ function lastLabel(iso: string | null): string {
 
     <div v-else-if="error" class="border border-brand bg-brand-soft p-5 text-sm text-white">{{ error }}</div>
 
-<div v-else class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-      <article v-for="c in visible" :key="c.id" class="border border-line bg-card p-4">
+<div v-else>
+      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <article v-for="c in visible" :key="c.id" class="border border-line bg-card p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="truncate font-semibold text-white">{{ c.name }}</p>
@@ -74,7 +75,7 @@ function lastLabel(iso: string | null): string {
       </article>
     </div>
 
-    <div v-else class="hidden overflow-x-auto border border-line md:block">
+    <div class="hidden overflow-x-auto border border-line md:block">
       <table class="w-full min-w-[720px] text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">
@@ -101,6 +102,7 @@ function lastLabel(iso: string | null): string {
           </tr>
         </tbody>
       </table>
+    </div>
     </div>
   </div>
 </template>
