@@ -48,7 +48,7 @@ src/
 
 ## Empezar en local
 
-Requisitos: Node.js **20.x** y npm.
+Requisitos: Node.js **24.x** y npm.
 
 ```bash
 # 1. Instalar dependencias (genera el cliente de Prisma)

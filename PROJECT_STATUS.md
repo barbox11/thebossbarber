@@ -66,7 +66,7 @@ Documento de seguimiento del proyecto. Se actualiza periódicamente durante el d
 ## EN PROGRESO
 
 - Verificación del despliegue en Vercel y configuración de variables de entorno reales (Neon).
-- Limpieza de warnings del build de Vercel (versión de Node fijada a `20.x`).
+- Limpieza de warnings del build de Vercel (versión de Node fijada a `24.x`, requerida por Vercel desde 2026-10-01).
 
 ---
 
