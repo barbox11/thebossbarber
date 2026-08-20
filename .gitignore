@@ -50,3 +50,6 @@ db-backup.json
 .vercel
 .env.local
 .env.*.local
+
+# ---- Tooling ----
+skills-lock.json
