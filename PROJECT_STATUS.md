@@ -31,7 +31,10 @@ Documento de seguimiento del proyecto. Se actualiza periódicamente durante el d
 ### Regla crítica: una sola reserva por horario
 - Índice único parcial en PostgreSQL:
   `CREATE UNIQUE INDEX "one_confirmed_per_slot" ON "Appointment" ("slotStart") WHERE "status" = 'CONFIRMED';`
-- Restricción de exclusión `tstzrange` para impedir solapamientos entre citas confirmadas.
+- Restricción de exclusión `tsrange` para impedir solapamientos entre citas confirmadas.
+  Las columnas son `TIMESTAMP` (sin zona horaria, valores UTC): `tsrange` es IMMUTABLE y
+  PostgreSQL la acepta en el índice GiST. (`tstzrange` es STABLE y PostgreSQL la rechaza
+  en expresiones de índice con `42P17`.)
 - Transacciones `Serializable` en Prisma + verificación previa de conflicto.
 - En el store en memoria, las reservas se serializan con una cola (`serialized`).
 - Dos usuarios reservando el mismo slot al mismo tiempo: el primero gana, el segundo recibe `slot_taken` (HTTP 409).
@@ -61,11 +64,19 @@ Documento de seguimiento del proyecto. Se actualiza periódicamente durante el d
 - Variables de entorno en `.env.example`; ningún secreto en el frontend.
 - Encabezados de seguridad en `vercel.json` (`nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`).
 
+### Despliegue en producción (Vercel + Neon)
+- Sitio y API desplegados: https://thebossbarber-gamma.vercel.app — `/api/health` → `{"ok":true,"mode":"postgres"}`.
+- Base de datos Neon migrada y sembrada (admin, 3 servicios y horarios por defecto).
+- `DATABASE_URL`/`DIRECT_URL` apuntan al endpoint **directo** de Neon (el pooler rompe las transacciones interactivas de Prisma con `P2028`).
+- La función serverless es autocontenida: `npm run build:server` empaqueta `server/` en `api/_server.mjs` con esbuild (generado en el build, gitignored).
+- Reintentos automáticos ante el cold-start de Neon: Neon suspende el compute tras ~5 min sin uso y tarda ~15-20 s en despertar; el store reintenta (máx. 8) antes de devolver error.
+- Timeout de la función a 60 s (`vercel.json` → `functions.api/index.ts.maxDuration`) para dar tiempo al despertado de Neon.
+
 ---
 
 ## EN PROGRESO
 
-- Verificación del despliegue en Vercel y configuración de variables de entorno reales (Neon).
+- Mantener despierto el compute de Neon en el plan free: Neon se suspende a los ~5 min de inactividad. Recomendado un ping programado (UptimeRobot o similar) a `/api/health` cada 3-4 min.
 - Limpieza de warnings del build de Vercel (versión de Node fijada a `24.x`, requerida por Vercel desde 2026-10-01).
 
 ---
@@ -106,3 +117,5 @@ Documento de seguimiento del proyecto. Se actualiza periódicamente durante el d
 6. **Cliente sin cuenta**: las citas se crean con un snapshot de datos y se relacionan con un `Customer` deduplicado por teléfono.
 7. **Zona horaria del negocio**: `America/Bogota` configurable vía variable `BUSINESS_TIMEZONE` (ver `api/lib/datetime.ts`).
 8. **Imágenes**: optimización local con Sharp (`scripts/optimize-images.mjs`) hacia `public/images` en WebP/AVIF.
+9. **Bundle serverless**: `@vercel/nft` (usado por `@vercel/node` para montar la función) no sigue los imports de archivos TS en modo ESM cuando hay anotaciones de tipos en parámetros de funciones ni `import type`; por eso `server/` se empaqueta con esbuild en `api/_server.mjs` y `api/index.ts` (con `@ts-nocheck`) solo importa ese bundle.
+10. **Endpoints de Neon**: el pooler (`-pooler`) rompe las transacciones interactivas de Prisma; las migraciones, el seed y la app usan el endpoint directo.
