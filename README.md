@@ -10,7 +10,7 @@ Landing premium + sistema de reservas en línea + panel administrativo para una 
 | ----------- | ------------------------------------------------- |
 | Frontend    | Vue 3 · TypeScript · Vite · Vue Router · Pinia · Tailwind CSS v4 |
 | API         | TypeScript · Express · Prisma ORM                 |
-| Base de datos | PostgreSQL (Neon)                              |
+| Base de datos | PostgreSQL (Supabase)                    |
 | Deployment  | Vercel (frontend + funciones serverless)          |
 
 ---
@@ -19,7 +19,7 @@ Landing premium + sistema de reservas en línea + panel administrativo para una 
 
 - **Landing premium**: hero cinematográfico, secciones de experiencia, servicios, nosotros y ubicación con mapa.
 - **Reservas sin cuenta**: wizard de 5 pasos (servicio → fecha → hora → datos → confirmación) con WhatsApp y recordatorio de calendario (.ics).
-- **Anti doble reserva**: índice único parcial + restricción `tstzrange` + transacción serializable. Dos personas no pueden reservar la misma fecha y hora.
+- **Anti doble reserva**: índice único parcial + restricción `tsrange` + transacción serializable. Dos personas no pueden reservar la misma fecha y hora.
 - **Precio congelado**: el valor del servicio se guarda al reservar (`priceAtBooking`).
 - **Panel admin real**: `/admin/login` con JWT + bcrypt. Dashboard con KPIs y gráficos, gestión de reservas, horarios, bloqueos, servicios, clientes y configuración del negocio.
 - **Performance**: imágenes WebP/AVIF responsive, lazy loading de rutas, code splitting.
@@ -60,7 +60,7 @@ cp .env.example .env
 #   Rellena: DATABASE_URL, DIRECT_URL, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
 #   (DATABASE_URL es opcional en local: sin ella la API usa un store en memoria)
 
-# 3. Base de datos (solo si usas PostgreSQL local/Neon)
+# 3. Base de datos (solo si usas PostgreSQL local/Supabase)
 npm run db:push
 npm run db:seed
 
@@ -92,7 +92,7 @@ Sin `DATABASE_URL`, el modo memoria permite probar toda la experiencia sin base 
 ## Variables de entorno
 
 ```env
-DATABASE_URL=      # URL de PostgreSQL (Neon) con pooling
+DATABASE_URL=      # URL de PostgreSQL (Supabase) — pooler de sesión
 DIRECT_URL=        # URL directa requerida por Prisma
 JWT_SECRET=        # Secreto para firmar JWT (cadena larga aleatoria)
 ADMIN_EMAIL=       # Email del admin inicial (se crea en la semilla)
