@@ -92,10 +92,10 @@ export const publicApi = {
       body: JSON.stringify(input),
     })
   },
-  cancelBooking(reference: string): Promise<{ ok: boolean }> {
+  cancelBooking(id: string, phone: string): Promise<{ ok: boolean }> {
     return request('/bookings/cancel', {
       method: 'POST',
-      body: JSON.stringify({ reference }),
+      body: JSON.stringify({ id, phone }),
     })
   },
 }
