@@ -340,7 +340,7 @@ export class PrismaStore implements Store {
       bookingsCount: c.appointments.length,
       totalSpent: c.appointments.reduce((sum, a) => sum + a.priceAtBooking, 0),
       lastBookingAt: c.appointments[0]?.slotStart ?? null,
-      canDelete: c.appointments.length > 0 && c.appointments.every((a) => a.status !== 'CONFIRMED'),
+      canDelete: c.appointments.every((a) => a.status !== 'CONFIRMED'),
     }))
   }
 
@@ -351,7 +351,7 @@ export class PrismaStore implements Store {
         include: { appointments: { select: { status: true } } },
       })
       if (!customer) return 'not_found'
-      if (customer.appointments.length === 0 || customer.appointments.some((a) => a.status === 'CONFIRMED')) {
+      if (customer.appointments.some((a) => a.status === 'CONFIRMED')) {
         return 'not_completed'
       }
       await tx.appointment.deleteMany({ where: { customerId: id } })

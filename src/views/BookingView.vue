@@ -7,12 +7,11 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 import { useCatalogStore } from '@/stores/catalog'
 
 const catalog = useCatalogStore()
-const whatsappNumber = ref('573217650814')
+const whatsappNumber = ref('3217650814')
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
 function toWhatsAppNumber(value: string): string {
-  const digits = value.replace(/\D/g, '')
-  return digits.startsWith('57') ? digits : `57${digits}`
+  return value.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '')
 }
 
 onMounted(() => {

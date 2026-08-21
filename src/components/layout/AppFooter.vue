@@ -55,7 +55,7 @@ onMounted(() => {
             </a>
             <a
               v-if="settings?.whatsapp"
-              :href="`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`"
+              :href="`https://wa.me/${settings.whatsapp.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '')}`"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"

@@ -26,7 +26,8 @@ function whatsappLink(): string | null {
     `• Hora: ${formatTime12(time.value)}`,
     `• Nombre: ${store.state.name}`,
   ].join('\n')
-  return `https://wa.me/${wa.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`
+  const number = wa.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '')
+  return `https://wa.me/${number}?text=${encodeURIComponent(msg)}`
 }
 
 function addToCalendar() {
