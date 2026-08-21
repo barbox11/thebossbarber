@@ -94,10 +94,10 @@ onMounted(() => {
               <AppIcon name="pin" :size="16" class="mt-0.5 shrink-0 text-brand" />
               {{ settings.address }}
             </li>
-            <li v-if="settings?.phone" class="flex items-center gap-3">
+            <li class="flex items-center gap-3">
               <AppIcon name="phone" :size="16" class="shrink-0 text-brand" />
-              <a :href="`tel:${settings.phone.replace(/\D/g, '')}`" class="transition-colors hover:text-white">
-                {{ settings.phone }}
+              <a :href="`tel:${BUSINESS_WHATSAPP_NUMBER}`" class="transition-colors hover:text-white">
+                {{ BUSINESS_WHATSAPP_NUMBER }}
               </a>
             </li>
             <li class="flex items-center gap-3">
