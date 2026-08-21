@@ -5,6 +5,7 @@ import { useBookingStore } from '@/stores/booking'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { downloadIcs } from '@/utils/ics'
 import { formatCOP, formatDateFull, formatTime12, minutesToLabel } from '@/utils/format'
+import { toWhatsAppNumber } from '@/utils/whatsapp'
 
 const store = useBookingStore()
 const router = useRouter()
@@ -26,8 +27,7 @@ function whatsappLink(): string | null {
     `• Hora: ${formatTime12(time.value)}`,
     `• Nombre: ${store.state.name}`,
   ].join('\n')
-  const number = wa.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '')
-  return `https://wa.me/${number}?text=${encodeURIComponent(msg)}`
+  return `https://wa.me/${toWhatsAppNumber(wa)}?text=${encodeURIComponent(msg)}`
 }
 
 function addToCalendar() {

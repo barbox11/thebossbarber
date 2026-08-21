@@ -5,14 +5,11 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 import BookingWizard from '@/components/booking/BookingWizard.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useCatalogStore } from '@/stores/catalog'
+import { toWhatsAppNumber } from '@/utils/whatsapp'
 
 const catalog = useCatalogStore()
 const whatsappNumber = ref('3217650814')
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
-
-function toWhatsAppNumber(value: string): string {
-  return value.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '')
-}
 
 onMounted(() => {
   window.scrollTo({ top: 0 })
