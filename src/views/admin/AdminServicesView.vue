@@ -23,6 +23,7 @@ const form = reactive({
 
 async function load() {
   loading.value = true
+  error.value = null
   try {
     services.value = (await adminApi.listServices()).sort((a, b) => a.sortOrder - b.sortOrder)
   } catch (e) {
@@ -73,7 +74,7 @@ async function toggleActive(s: Service) {
   try {
     const updated = await adminApi.updateService(s.id, { active: !s.active })
     const idx = services.value.findIndex((x) => x.id === s.id)
-    if (idx !== -1) services.value[idx] = { ...services.value[idx], active: updated.active }
+    if (idx !== -1) services.value[idx] = { ...services.value[idx], ...updated }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'No se pudo cambiar el estado del servicio.'
   } finally {
@@ -121,11 +122,20 @@ onMounted(load)
             :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
             :aria-busy="toggling.has(s.id)"
             :disabled="toggling.has(s.id)"
-            class="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+            class="relative h-11 w-14 shrink-0 rounded-full transition-colors disabled:cursor-wait"
             :class="s.active ? 'bg-brand' : 'bg-card-2'"
             @click="toggleActive(s)"
           >
-            <span class="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform" :class="s.active ? 'translate-x-5' : 'translate-x-0.5'" />
+            <span
+              v-if="toggling.has(s.id)"
+              class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-white/50 border-t-white"
+              aria-hidden="true"
+            />
+            <span
+              v-else
+              class="absolute top-3 h-5 w-5 rounded-full bg-white transition-transform"
+              :class="s.active ? 'translate-x-8' : 'translate-x-1'"
+            />
           </button>
         </div>
         <div class="flex items-center justify-between gap-3 border-t border-line p-4">
@@ -146,7 +156,7 @@ onMounted(load)
     </div>
 
     <div class="hidden overflow-x-auto border border-line md:block">
-      <table class="w-full min-w-[640px] text-left text-sm">
+      <table class="w-full min-w-160 text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">
             <th class="px-4 py-3 font-bold">Servicio</th>
@@ -172,11 +182,20 @@ onMounted(load)
                 :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
                 :aria-busy="toggling.has(s.id)"
                 :disabled="toggling.has(s.id)"
-                class="relative h-6 w-11 rounded-full transition-colors"
+                class="relative h-11 w-14 rounded-full transition-colors disabled:cursor-wait"
                 :class="s.active ? 'bg-brand' : 'bg-card-2'"
                 @click="toggleActive(s)"
               >
-                <span class="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform" :class="s.active ? 'translate-x-5' : 'translate-x-0.5'" />
+                <span
+                  v-if="toggling.has(s.id)"
+                  class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-white/50 border-t-white"
+                  aria-hidden="true"
+                />
+                <span
+                  v-else
+                  class="absolute top-3 h-5 w-5 rounded-full bg-white transition-transform"
+                  :class="s.active ? 'translate-x-8' : 'translate-x-1'"
+                />
               </button>
             </td>
             <td class="px-4 py-3">
@@ -199,7 +218,7 @@ onMounted(load)
 
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showForm" class="fixed inset-0 z-[90] flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Formulario de servicio" @click.self="showForm = false">
+        <div v-if="showForm" class="fixed inset-0 z-90 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Formulario de servicio" @click.self="showForm = false">
           <form class="w-full max-w-md border border-line bg-ink-2 p-6" novalidate @submit.prevent="save">
             <div class="mb-5 flex items-center justify-between">
               <h3 class="font-display text-2xl uppercase text-white">{{ editing ? 'Editar servicio' : 'Nuevo servicio' }}</h3>
@@ -228,7 +247,7 @@ onMounted(load)
                 </div>
               </div>
               <label class="flex items-center gap-3 text-sm text-white">
-                <input v-model="form.active" type="checkbox" class="h-4 w-4 accent-[#e10600]" />
+                <input v-model="form.active" type="checkbox" class="h-4 w-4 accent-brand" />
                 Servicio activo
               </label>
             </div>

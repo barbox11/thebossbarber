@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import BookingWizard from '@/components/booking/BookingWizard.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useCatalogStore } from '@/stores/catalog'
+
+const catalog = useCatalogStore()
+const whatsappNumber = ref('5732176550814')
+const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
 onMounted(() => {
   window.scrollTo({ top: 0 })
+  catalog.load().then(() => {
+    const configuredNumber = catalog.settings?.whatsapp.replace(/\D/g, '')
+    if (configuredNumber) whatsappNumber.value = configuredNumber
+  })
 })
 </script>
 
@@ -20,10 +29,10 @@ onMounted(() => {
     </main>
 
     <a
-      :href="`https://wa.me/5732176550814?text=${encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')}`"
+      :href="`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`"
       target="_blank"
       rel="noopener noreferrer"
-      class="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-lg shadow-brand/30 transition-transform hover:scale-105"
+      class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/30 transition-transform hover:scale-105 active:scale-95"
       aria-label="Escríbenos por WhatsApp"
     >
       <AppIcon name="whatsapp" :size="26" />
