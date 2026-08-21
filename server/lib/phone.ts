@@ -3,7 +3,3 @@ export function normalizePhoneNumber(value: string): string {
   while (digits.startsWith('57') && digits.length > 10) digits = digits.slice(2)
   return digits
 }
-
-export function toWhatsAppNumber(value: string): string {
-  return `57${normalizePhoneNumber(value)}`
-}

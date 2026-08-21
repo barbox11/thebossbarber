@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { adminApi } from '@/services/api'
 import type { BusinessSettings } from '@/types'
+import { normalizePhoneNumber } from '@/utils/whatsapp'
 
 const form = reactive<BusinessSettings>({
   businessName: '',
@@ -22,7 +23,8 @@ const error = ref<string | null>(null)
 
 onMounted(async () => {
   try {
-    Object.assign(form, await adminApi.getSettings())
+    const settings = await adminApi.getSettings()
+    Object.assign(form, { ...settings, phone: normalizePhoneNumber(settings.phone), whatsapp: normalizePhoneNumber(settings.whatsapp) })
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'No pudimos cargar la configuración.'
   } finally {
@@ -35,7 +37,11 @@ async function save() {
   saved.value = ''
   error.value = null
   try {
-    Object.assign(form, await adminApi.updateSettings(form))
+    Object.assign(form, await adminApi.updateSettings({
+      ...form,
+      phone: normalizePhoneNumber(form.phone),
+      whatsapp: normalizePhoneNumber(form.whatsapp),
+    }))
     saved.value = 'Configuración guardada.'
     setTimeout(() => (saved.value = ''), 2500)
   } catch (e) {

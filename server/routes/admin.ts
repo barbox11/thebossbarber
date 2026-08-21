@@ -11,6 +11,7 @@ import {
   updateStatusSchema,
 } from '../lib/schemas'
 import { utcToZonedTime, utcToZonedDateKey, BUSINESS_TZ } from '../lib/datetime'
+import { normalizePhoneNumber } from '../lib/phone'
 
 const router = Router()
 router.use(requireAdmin)
@@ -210,7 +211,11 @@ router.put('/settings', async (req, res) => {
     return res.status(400).json({ error: first?.message ?? 'Datos inválidos.' })
   }
   const store = getStore()
-  res.json(await store.updateSettings(parsed.data))
+  res.json(await store.updateSettings({
+    ...parsed.data,
+    ...(parsed.data.phone ? { phone: normalizePhoneNumber(parsed.data.phone) } : {}),
+    ...(parsed.data.whatsapp ? { whatsapp: normalizePhoneNumber(parsed.data.whatsapp) } : {}),
+  }))
 })
 
 export default router
