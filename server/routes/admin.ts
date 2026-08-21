@@ -193,7 +193,7 @@ router.delete('/customers/:id', async (req, res) => {
   const result = await getStore().deleteCustomer(req.params.id)
   if (result === 'not_found') return res.status(404).json({ error: 'Cliente no encontrado.' })
   if (result === 'not_completed') {
-    return res.status(409).json({ error: 'Solo puedes eliminar clientes con todas sus citas completadas.' })
+    return res.status(409).json({ error: 'No puedes eliminar un cliente con una cita confirmada.' })
   }
   res.json({ ok: true })
 })

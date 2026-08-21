@@ -258,7 +258,7 @@ export class MemoryStore implements Store {
         bookingsCount: own.length,
         totalSpent: own.reduce((sum, a) => sum + a.priceAtBooking, 0),
         lastBookingAt: last ? last.slotStart : null,
-        canDelete: own.length > 0 && own.every((a) => a.status === 'COMPLETED'),
+        canDelete: own.length > 0 && own.every((a) => a.status !== 'CONFIRMED'),
       }
     })
     return Promise.resolve(list.sort((a, b) => b.bookingsCount - a.bookingsCount))
@@ -268,7 +268,7 @@ export class MemoryStore implements Store {
     const customer = this.customers.find((c) => c.id === id)
     if (!customer) return Promise.resolve('not_found')
     const own = this.appointments.filter((a) => a.customerId === id)
-    if (own.length === 0 || own.some((a) => a.status !== 'COMPLETED')) return Promise.resolve('not_completed')
+    if (own.length === 0 || own.some((a) => a.status === 'CONFIRMED')) return Promise.resolve('not_completed')
     this.appointments = this.appointments.filter((a) => a.customerId !== id)
     this.customers = this.customers.filter((c) => c.id !== id)
     return Promise.resolve('deleted')

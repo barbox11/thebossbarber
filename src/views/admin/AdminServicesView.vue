@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { adminApi } from '@/services/api'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import AdminToggle from '@/components/admin/AdminToggle.vue'
 import { formatCOP, minutesToLabel } from '@/utils/format'
 import type { Service } from '@/types'
 
@@ -115,28 +116,12 @@ onMounted(load)
             <p class="truncate font-semibold text-white" :class="s.active ? '' : 'opacity-50'">{{ s.name }}</p>
             <p class="mt-1 line-clamp-2 text-xs text-muted">{{ s.description }}</p>
           </div>
-          <button
-            type="button"
-            role="switch"
-            :aria-checked="s.active"
-            :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
-            :aria-busy="toggling.has(s.id)"
-            :disabled="toggling.has(s.id)"
-            class="relative h-11 w-14 shrink-0 rounded-full transition-colors disabled:cursor-wait"
-            :class="s.active ? 'bg-brand' : 'bg-card-2'"
-            @click="toggleActive(s)"
-          >
-            <span
-              v-if="toggling.has(s.id)"
-              class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-white/50 border-t-white"
-              aria-hidden="true"
-            />
-            <span
-              v-else
-              class="absolute top-3 h-5 w-5 rounded-full bg-white transition-transform"
-              :class="s.active ? 'translate-x-8' : 'translate-x-1'"
-            />
-          </button>
+          <AdminToggle
+            :enabled="s.active"
+            :busy="toggling.has(s.id)"
+            :label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
+            @toggle="toggleActive(s)"
+          />
         </div>
         <div class="flex items-center justify-between gap-3 border-t border-line p-4">
           <div class="flex items-baseline gap-2">
@@ -175,28 +160,12 @@ onMounted(load)
             <td class="px-4 py-3 text-muted">{{ minutesToLabel(s.durationMin) }}</td>
             <td class="px-4 py-3 font-display text-lg text-white">{{ formatCOP(s.price) }}</td>
             <td class="px-4 py-3">
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="s.active"
-                :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
-                :aria-busy="toggling.has(s.id)"
-                :disabled="toggling.has(s.id)"
-                class="relative h-11 w-14 rounded-full transition-colors disabled:cursor-wait"
-                :class="s.active ? 'bg-brand' : 'bg-card-2'"
-                @click="toggleActive(s)"
-              >
-                <span
-                  v-if="toggling.has(s.id)"
-                  class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-white/50 border-t-white"
-                  aria-hidden="true"
-                />
-                <span
-                  v-else
-                  class="absolute top-3 h-5 w-5 rounded-full bg-white transition-transform"
-                  :class="s.active ? 'translate-x-8' : 'translate-x-1'"
-                />
-              </button>
+              <AdminToggle
+                :enabled="s.active"
+                :busy="toggling.has(s.id)"
+                :label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
+                @toggle="toggleActive(s)"
+              />
             </td>
             <td class="px-4 py-3">
               <div class="flex justify-end gap-1.5">

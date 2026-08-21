@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { adminApi } from '@/services/api'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import AdminToggle from '@/components/admin/AdminToggle.vue'
 import { WEEKDAYS_FULL, formatTime12, isPastDay } from '@/utils/format'
 import type { BlockedTime, BusinessHour } from '@/types'
 
@@ -101,20 +102,12 @@ onMounted(load)
             <span class="text-sm font-bold uppercase tracking-wide text-white" :class="day.isOpen ? '' : 'text-muted-2'">
               {{ WEEKDAYS_FULL[day.dayOfWeek] }}
             </span>
-            <button
-              type="button"
-              role="switch"
-              :aria-checked="day.isOpen"
-              :disabled="saving"
-              class="relative h-6 w-11 rounded-full transition-colors"
-              :class="day.isOpen ? 'bg-brand' : 'bg-card-2'"
-              @click="toggleDay(day)"
-            >
-              <span
-                class="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform"
-                :class="day.isOpen ? 'translate-x-5' : 'translate-x-0.5'"
-              />
-            </button>
+            <AdminToggle
+              :enabled="day.isOpen"
+              :busy="saving"
+              :label="`${day.isOpen ? 'Cerrar' : 'Abrir'} ${WEEKDAYS_FULL[day.dayOfWeek]}`"
+              @toggle="toggleDay(day)"
+            />
           </div>
           <div v-if="day.isOpen" class="flex items-center gap-2 text-sm">
             <input
@@ -161,7 +154,7 @@ onMounted(load)
         </div>
 
         <label class="flex items-center gap-3 text-sm text-white">
-          <input v-model="form.allDay" type="checkbox" class="h-4 w-4 accent-[#e10600]" />
+          <input v-model="form.allDay" type="checkbox" class="h-4 w-4 accent-brand" />
           Todo el día
         </label>
 

@@ -40,7 +40,7 @@ function lastLabel(iso: string | null): string {
 
 async function removeCustomer(customer: CustomerWithStats) {
   if (!customer.canDelete || deleting.value) return
-  if (!window.confirm(`¿Eliminar a ${customer.name} y sus citas completadas?`)) return
+  if (!window.confirm(`¿Eliminar a ${customer.name} y su historial de citas?`)) return
 
   deleting.value = customer.id
   error.value = null
@@ -94,7 +94,7 @@ async function removeCustomer(customer: CustomerWithStats) {
               type="button"
               class="flex h-8 w-8 shrink-0 items-center justify-center border border-line-2 text-muted transition-colors hover:border-brand hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-30"
               :disabled="!c.canDelete || deleting === c.id"
-              :title="c.canDelete ? 'Eliminar cliente y citas completadas' : 'Solo disponible con todas las citas completadas'"
+              :title="c.canDelete ? 'Eliminar cliente y su historial' : 'Tiene una cita confirmada'"
               :aria-label="`Eliminar a ${c.name}`"
               @click="removeCustomer(c)"
             >
@@ -135,7 +135,7 @@ async function removeCustomer(customer: CustomerWithStats) {
                 type="button"
                 class="inline-flex h-8 w-8 items-center justify-center border border-line-2 text-muted transition-colors hover:border-brand hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-30"
                 :disabled="!c.canDelete || deleting === c.id"
-                :title="c.canDelete ? 'Eliminar cliente y citas completadas' : 'Solo disponible con todas las citas completadas'"
+                :title="c.canDelete ? 'Eliminar cliente y su historial' : 'Tiene una cita confirmada'"
                 :aria-label="`Eliminar a ${c.name}`"
                 @click="removeCustomer(c)"
               >
