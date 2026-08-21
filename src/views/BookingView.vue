@@ -8,7 +8,7 @@ import { useCatalogStore } from '@/stores/catalog'
 import { toWhatsAppNumber } from '@/utils/whatsapp'
 
 const catalog = useCatalogStore()
-const whatsappNumber = ref('3217650814')
+const whatsappNumber = ref(toWhatsAppNumber('3217650814'))
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
 onMounted(() => {
