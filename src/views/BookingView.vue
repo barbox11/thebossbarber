@@ -10,10 +10,15 @@ const catalog = useCatalogStore()
 const whatsappNumber = ref('573217650814')
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
+function toWhatsAppNumber(value: string): string {
+  const digits = value.replace(/\D/g, '')
+  return digits.startsWith('57') ? digits : `57${digits}`
+}
+
 onMounted(() => {
   window.scrollTo({ top: 0 })
   catalog.load().then(() => {
-    const configuredNumber = catalog.settings?.whatsapp.replace(/\D/g, '')
+    const configuredNumber = catalog.settings?.whatsapp && toWhatsAppNumber(catalog.settings.whatsapp)
     if (configuredNumber) whatsappNumber.value = configuredNumber
   })
 })

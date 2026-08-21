@@ -75,8 +75,8 @@ export type BusinessSettings = Record<SettingsKey, string>
 export const DEFAULT_SETTINGS: BusinessSettings = {
   businessName: 'The Boss Barber',
   barberName: 'El Maestro Barbero',
-  phone: '+57 321 76550814',
-  whatsapp: '+57 321 76550814',
+  phone: '3217650814',
+  whatsapp: '3217650814',
   address: 'Cra 23 # 18-87, La Hermosa',
   instagram: '',
   statsCustomers: '+2.000',
