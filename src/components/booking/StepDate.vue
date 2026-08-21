@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { publicApi } from '@/services/api'
+import { publicApi, type MonthAvailability } from '@/services/api'
 import { useBookingStore } from '@/stores/booking'
 import {
   buildMonthGrid,
@@ -12,6 +12,8 @@ import {
 import { formatDateLong, isPastDay, monthLabel } from '@/utils/format'
 import AppIcon from '@/components/ui/AppIcon.vue'
 
+const monthCache = new Map<string, MonthAvailability['days']>()
+
 const store = useBookingStore()
 const serviceId = computed(() => store.state.service?.id ?? '')
 
@@ -19,19 +21,41 @@ const month = ref(minSelectableMonth())
 const days = computed(() => buildMonthGrid(month.value))
 const monthData = ref<Record<string, { open: boolean; hasSlots: boolean; blocked: boolean }>>({})
 const loadingMonth = ref(false)
+const monthError = ref<string | null>(null)
+let requestVersion = 0
 
 const canPrev = computed(() => month.value > minSelectableMonth())
 const canNext = computed(() => month.value < maxSelectableMonth())
 
 async function loadMonth() {
-  loadingMonth.value = true
-  try {
-    const res = await publicApi.getMonthAvailability(month.value, serviceId.value)
-    monthData.value = res.days
-  } catch {
-    monthData.value = {}
-  } finally {
+  const version = ++requestVersion
+  const cacheKey = `${month.value}:${serviceId.value}`
+  const cachedDays = monthCache.get(cacheKey)
+  if (cachedDays) {
+    monthData.value = cachedDays
+    monthError.value = null
     loadingMonth.value = false
+    return
+  }
+
+  loadingMonth.value = true
+  monthError.value = null
+  try {
+    const res = await Promise.race([
+      publicApi.getMonthAvailability(month.value, serviceId.value),
+      new Promise<never>((_, reject) => {
+        window.setTimeout(() => reject(new Error('La disponibilidad está tardando demasiado.')), 10000)
+      }),
+    ])
+    monthCache.set(cacheKey, res.days)
+    if (version === requestVersion) monthData.value = res.days
+  } catch (e) {
+    if (version === requestVersion) {
+      monthData.value = {}
+      monthError.value = e instanceof Error ? e.message : 'No pudimos cargar la disponibilidad.'
+    }
+  } finally {
+    if (version === requestVersion) loadingMonth.value = false
   }
 }
 
@@ -114,7 +138,14 @@ onMounted(loadMonth)
       </button>
     </div>
 
-    <p v-if="loadingMonth" class="mt-4 text-xs text-muted-2">Cargando disponibilidad…</p>
+    <div v-if="loadingMonth" class="mt-4 flex items-center gap-2 text-xs text-muted-2" role="status" aria-live="polite">
+      <span class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-muted-2/40 border-t-brand" aria-hidden="true" />
+      Cargando disponibilidad…
+    </div>
+    <div v-else-if="monthError" class="mt-4 flex items-center justify-between gap-3 border border-brand/40 bg-brand-soft p-3 text-xs text-muted" role="alert">
+      <span>{{ monthError }}</span>
+      <button type="button" class="shrink-0 font-bold uppercase tracking-wider text-brand-hover" @click="loadMonth">Reintentar</button>
+    </div>
     <p v-else class="mt-4 text-xs leading-relaxed text-muted-2">
       Los días atenuados no tienen disponibilidad. Elige un día marcado para ver horarios.
     </p>

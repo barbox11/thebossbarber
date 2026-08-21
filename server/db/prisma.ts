@@ -192,6 +192,15 @@ export class PrismaStore implements Store {
     }) as unknown as Promise<import('./types').AppointmentWithRelations[]>
   }
 
+  listAppointmentsBetween(start: Date, end: Date): Promise<import('./types').AppointmentRecord[]> {
+    return prisma.appointment.findMany({
+      where: {
+        slotStart: { lt: end },
+        slotEnd: { gt: start },
+      },
+    }) as unknown as Promise<import('./types').AppointmentRecord[]>
+  }
+
   async updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<AppointmentRecord | null> {
     try {
       return await prisma.appointment.update({ where: { id }, data: { status } })

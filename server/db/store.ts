@@ -56,6 +56,7 @@ export interface Store {
   updateSettings(patch: Partial<BusinessSettings>): Promise<BusinessSettings>
   findAdminByEmail(email: string): Promise<AdminRecord | null>
   listAppointments(): Promise<Array<import('./types').AppointmentWithRelations>>
+  listAppointmentsBetween(start: Date, end: Date): Promise<import('./types').AppointmentRecord[]>
   updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<AppointmentRecord | null>
   createBooking(input: BookingInput): Promise<BookingResult>
   listCustomers(): Promise<

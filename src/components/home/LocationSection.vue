@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue'
 import { useCatalogStore } from '@/stores/catalog'
 import { publicApi } from '@/services/api'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import BusinessMap from '@/components/home/BusinessMap.vue'
 import { formatTime12, WEEKDAYS_SHORT } from '@/utils/format'
 import type { BusinessHour } from '@/types'
 
+const BusinessMap = defineAsyncComponent(() => import('@/components/home/BusinessMap.vue'))
+
 const catalog = useCatalogStore()
 const hours = ref<BusinessHour[]>([])
+const mapShell = ref<HTMLElement | null>(null)
+const mapVisible = ref(false)
+let mapObserver: IntersectionObserver | null = null
 
 const hoursLabel = computed(() => {
   const openHours = hours.value
@@ -31,7 +35,24 @@ onMounted(async () => {
   } catch {
     hours.value = []
   }
+
+  if ('IntersectionObserver' in window && mapShell.value) {
+    mapObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          mapVisible.value = true
+          mapObserver?.disconnect()
+        }
+      },
+      { rootMargin: '240px' },
+    )
+    mapObserver.observe(mapShell.value)
+  } else {
+    mapVisible.value = true
+  }
 })
+
+onUnmounted(() => mapObserver?.disconnect())
 </script>
 
 <template>
@@ -88,8 +109,9 @@ onMounted(async () => {
       </div>
 
       <div class="reveal lg:col-span-7">
-        <div class="crop-frame relative h-full min-h-105 overflow-hidden border border-line bg-ink-2 lg:min-h-130">
-          <BusinessMap />
+        <div ref="mapShell" class="crop-frame relative h-full min-h-105 overflow-hidden border border-line bg-ink-2 lg:min-h-130">
+          <BusinessMap v-if="mapVisible" />
+          <div v-else class="absolute inset-0 bg-card" aria-label="Mapa cargando" />
         </div>
       </div>
     </div>

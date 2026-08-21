@@ -158,6 +158,12 @@ export class MemoryStore implements Store {
     return Promise.resolve(list.sort((a, b) => a.slotStart.getTime() - b.slotStart.getTime()))
   }
 
+  listAppointmentsBetween(start: Date, end: Date): Promise<AppointmentRecord[]> {
+    return Promise.resolve(
+      this.appointments.filter((a) => a.slotStart < end && a.slotEnd > start),
+    )
+  }
+
   updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<AppointmentRecord | null> {
     const idx = this.appointments.findIndex((a) => a.id === id)
     if (idx === -1) return Promise.resolve(null)
