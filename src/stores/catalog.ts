@@ -55,5 +55,21 @@ export const useCatalogStore = defineStore('catalog', () => {
     services.value = await publicApi.getServices()
   }
 
-  return { services, settings, activeServices, loaded, loading, load, refreshServices }
+  async function refresh() {
+    loaded.value = false
+    loading.value = true
+    try {
+      const [svc, stg] = await Promise.all([publicApi.getServices(), publicApi.getSettings()])
+      services.value = svc.length ? svc : fallbackServices
+      settings.value = stg
+    } catch {
+      services.value = fallbackServices
+      settings.value = fallbackSettings
+    } finally {
+      loaded.value = true
+      loading.value = false
+    }
+  }
+
+  return { services, settings, activeServices, loaded, loading, load, refreshServices, refresh }
 })

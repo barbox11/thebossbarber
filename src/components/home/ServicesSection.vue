@@ -13,7 +13,7 @@ const services = computed(() => catalog.activeServices)
 const loading = computed(() => catalog.loading && !catalog.loaded)
 
 onMounted(() => {
-  if (!catalog.loaded) catalog.load()
+  catalog.refresh()
 })
 
 function bookService(service: Service) {
@@ -81,6 +81,9 @@ function bookService(service: Service) {
                 Reservar
                 <AppIcon name="arrowRight" :size="14" class="transition-transform group-hover:translate-x-0.5" />
               </button>
+              <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-soft">
+                $${service.price.toLocaleString()}
+              </p>
             </div>
           </article>
         </template>
@@ -88,6 +91,9 @@ function bookService(service: Service) {
 
       <p class="mt-8 text-xs leading-relaxed text-muted-2">
         * Para servicios personalizados adicionales, consúltalo directamente el día de tu cita.
+      </p>
+      <p class="mt-3 text-xs text-brand-soft">
+        * Precios válidos al momento de reservar vía celular/WhastApp. El valor se congelará al confirmar la cita.
       </p>
     </div>
   </section>

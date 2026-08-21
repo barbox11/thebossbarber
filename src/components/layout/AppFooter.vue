@@ -7,7 +7,7 @@ const catalog = useCatalogStore()
 const settings = ref(catalog.settings)
 
 onMounted(() => {
-  catalog.load().then(() => {
+  catalog.refresh().then(() => {
     settings.value = catalog.settings
   })
 })

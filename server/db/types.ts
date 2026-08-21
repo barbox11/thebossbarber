@@ -106,18 +106,34 @@ export const DEFAULT_SERVICES: Omit<ServiceRecord, 'id'>[] = [
   {
     name: 'Corte + Barba',
     description: 'Corte completo más perfilado de barba con toalla caliente y acabado premium.',
-    price: 40000,
+    price: 25000,
     durationMin: 60,
     active: true,
     sortOrder: 2,
   },
   {
-    name: 'Barba',
-    description: 'Perfilado, arreglo y cuidado de barba con productos profesionales.',
-    price: 20000,
+    name: 'Diseño de barba',
+    description: 'Perfilado, arreglo y cuidado de barba con productos premium.',
+    price: 10000,
     durationMin: 30,
     active: true,
     sortOrder: 3,
+  },
+  {
+    name: 'Corte de puntas',
+    description: 'Retoque de puntas y acabado ligero.',
+    price: 10000,
+    durationMin: 15,
+    active: true,
+    sortOrder: 4,
+  },
+  {
+    name: 'Diseño de cejas',
+    description: 'Diseño y arreglo de cejas con técnica premium.',
+    price: 5000,
+    durationMin: 10,
+    active: true,
+    sortOrder: 5,
   },
 ]
 

@@ -14,7 +14,7 @@ const stats = ref<{ customers: string; years: string; rating: string }>({
 })
 
 onMounted(() => {
-  catalog.load().then(() => {
+  catalog.refresh().then(() => {
     const s = catalog.settings
     if (s) {
       stats.value = {

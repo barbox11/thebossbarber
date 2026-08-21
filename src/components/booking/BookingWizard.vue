@@ -36,13 +36,11 @@ const progress = computed(() => ((stepIndex.value + 1) / steps.length) * 100)
 const services = computed(() => catalog.activeServices)
 
 onMounted(() => {
-  catalog.load()
+  catalog.refresh()
   const queryService = route.query.servicio as string | undefined
   if (queryService) {
-    catalog.load().then(() => {
-      const match = catalog.services.find((s) => s.id === queryService && s.active)
-      if (match && !store.state.service) store.selectService(match)
-    })
+    const match = catalog.services.find((s) => s.id === queryService && s.active)
+    if (match && !store.state.service) store.selectService(match)
   }
 })
 
