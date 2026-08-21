@@ -7,7 +7,7 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 import { useCatalogStore } from '@/stores/catalog'
 
 const catalog = useCatalogStore()
-const whatsappNumber = ref('5732176550814')
+const whatsappNumber = ref('573217650814')
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
 onMounted(() => {
