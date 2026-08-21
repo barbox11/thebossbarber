@@ -2,12 +2,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { adminApi } from '@/services/api'
 import { formatCOP, WEEKDAYS_FULL } from '@/utils/format'
+import AppIcon from '@/components/ui/AppIcon.vue'
 import type { CustomerWithStats } from '@/types'
 
 const rows = ref<CustomerWithStats[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const query = ref('')
+const deleting = ref<string | null>(null)
 
 const visible = computed(() => {
   const q = query.value.trim().toLowerCase()
@@ -34,6 +36,22 @@ function lastLabel(iso: string | null): string {
   if (!iso) return '—'
   const d = new Date(iso)
   return `${WEEKDAYS_FULL[d.getDay()]} ${d.getDate()}`
+}
+
+async function removeCustomer(customer: CustomerWithStats) {
+  if (!customer.canDelete || deleting.value) return
+  if (!window.confirm(`¿Eliminar a ${customer.name} y sus citas completadas?`)) return
+
+  deleting.value = customer.id
+  error.value = null
+  try {
+    await adminApi.deleteCustomer(customer.id)
+    rows.value = rows.value.filter((row) => row.id !== customer.id)
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'No se pudo eliminar el cliente.'
+  } finally {
+    deleting.value = null
+  }
 }
 </script>
 
@@ -68,15 +86,27 @@ function lastLabel(iso: string | null): string {
         </div>
         <p class="mt-3 text-sm text-muted">{{ c.phone }}</p>
         <p v-if="c.whatsapp && c.whatsapp !== c.phone" class="text-xs text-muted-2">WhatsApp: {{ c.whatsapp }}</p>
-        <div class="mt-4 flex items-center justify-between border-t border-line pt-3">
+        <div class="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
           <span class="text-xs text-muted-2">Última cita · {{ lastLabel(c.lastBookingAt) }}</span>
-          <span class="font-display text-lg text-white">{{ formatCOP(c.totalSpent) }}</span>
+          <div class="flex items-center gap-3">
+            <span class="font-display text-lg text-white">{{ formatCOP(c.totalSpent) }}</span>
+            <button
+              type="button"
+              class="flex h-8 w-8 shrink-0 items-center justify-center border border-line-2 text-muted transition-colors hover:border-brand hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-30"
+              :disabled="!c.canDelete || deleting === c.id"
+              :title="c.canDelete ? 'Eliminar cliente y citas completadas' : 'Solo disponible con todas las citas completadas'"
+              :aria-label="`Eliminar a ${c.name}`"
+              @click="removeCustomer(c)"
+            >
+              <AppIcon name="trash" :size="14" />
+            </button>
+          </div>
         </div>
       </article>
     </div>
 
     <div class="hidden overflow-x-auto border border-line md:block">
-      <table class="w-full min-w-[720px] text-left text-sm">
+      <table class="w-full min-w-180 text-left text-sm">
         <thead class="border-b border-line bg-ink-2">
           <tr class="text-[10px] uppercase tracking-[0.16em] text-muted">
             <th class="px-4 py-3 font-bold">Cliente</th>
@@ -84,6 +114,7 @@ function lastLabel(iso: string | null): string {
             <th class="px-4 py-3 font-bold">Reservas</th>
             <th class="px-4 py-3 font-bold">Última cita</th>
             <th class="px-4 py-3 font-bold">Total generado</th>
+            <th class="px-4 py-3 font-bold text-right">Acciones</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-line">
@@ -99,6 +130,18 @@ function lastLabel(iso: string | null): string {
             <td class="px-4 py-3"><span class="font-display text-lg text-white">{{ c.bookingsCount }}</span></td>
             <td class="px-4 py-3 text-muted">{{ lastLabel(c.lastBookingAt) }}</td>
             <td class="px-4 py-3 font-display text-lg text-white">{{ formatCOP(c.totalSpent) }}</td>
+            <td class="px-4 py-3 text-right">
+              <button
+                type="button"
+                class="inline-flex h-8 w-8 items-center justify-center border border-line-2 text-muted transition-colors hover:border-brand hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-30"
+                :disabled="!c.canDelete || deleting === c.id"
+                :title="c.canDelete ? 'Eliminar cliente y citas completadas' : 'Solo disponible con todas las citas completadas'"
+                :aria-label="`Eliminar a ${c.name}`"
+                @click="removeCustomer(c)"
+              >
+                <AppIcon name="trash" :size="14" />
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>

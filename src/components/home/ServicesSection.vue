@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCatalogStore } from '@/stores/catalog'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import { formatCOP, minutesToLabel } from '@/utils/format'
 import type { Service } from '@/types'
 
@@ -72,18 +73,16 @@ function bookService(service: Service) {
               {{ formatCOP(service.price) }}
             </p>
             <div class="md:col-span-1 md:text-right">
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-muted transition-colors group-hover:text-brand-hover"
+              <AppButton
+                variant="primary"
+                size="sm"
+                class="w-full md:w-auto"
                 :aria-label="`Reservar ${service.name}`"
                 @click="bookService(service)"
               >
                 Reservar
-                <AppIcon name="arrowRight" :size="14" class="transition-transform group-hover:translate-x-0.5" />
-              </button>
-              <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-brand-soft">
-                $${service.price.toLocaleString()}
-              </p>
+                <AppIcon name="arrowRight" :size="14" />
+              </AppButton>
             </div>
           </article>
         </template>

@@ -155,6 +155,9 @@ export const adminApi = {
   listCustomers(): Promise<CustomerWithStats[]> {
     return request('/admin/customers')
   },
+  deleteCustomer(id: string): Promise<{ ok: boolean }> {
+    return request(`/admin/customers/${id}`, { method: 'DELETE' })
+  },
   getSettings(): Promise<BusinessSettings> {
     return request('/admin/settings')
   },

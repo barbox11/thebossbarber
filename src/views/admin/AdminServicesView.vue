@@ -10,6 +10,7 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const editing = ref<Service | null>(null)
 const showForm = ref(false)
+const toggling = ref<Set<string>>(new Set())
 
 const form = reactive({
   name: '',
@@ -66,9 +67,20 @@ async function save() {
 }
 
 async function toggleActive(s: Service) {
-  const updated = await adminApi.updateService(s.id, { active: !s.active })
-  const idx = services.value.findIndex((x) => x.id === s.id)
-  if (idx !== -1) services.value[idx] = { ...services.value[idx], active: updated.active }
+  if (toggling.value.has(s.id)) return
+  toggling.value = new Set(toggling.value).add(s.id)
+  error.value = null
+  try {
+    const updated = await adminApi.updateService(s.id, { active: !s.active })
+    const idx = services.value.findIndex((x) => x.id === s.id)
+    if (idx !== -1) services.value[idx] = { ...services.value[idx], active: updated.active }
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'No se pudo cambiar el estado del servicio.'
+  } finally {
+    const next = new Set(toggling.value)
+    next.delete(s.id)
+    toggling.value = next
+  }
 }
 
 onMounted(load)
@@ -107,6 +119,8 @@ onMounted(load)
             role="switch"
             :aria-checked="s.active"
             :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
+            :aria-busy="toggling.has(s.id)"
+            :disabled="toggling.has(s.id)"
             class="relative h-6 w-11 shrink-0 rounded-full transition-colors"
             :class="s.active ? 'bg-brand' : 'bg-card-2'"
             @click="toggleActive(s)"
@@ -155,6 +169,9 @@ onMounted(load)
                 type="button"
                 role="switch"
                 :aria-checked="s.active"
+                :aria-label="`${s.active ? 'Desactivar' : 'Activar'} ${s.name}`"
+                :aria-busy="toggling.has(s.id)"
+                :disabled="toggling.has(s.id)"
                 class="relative h-6 w-11 rounded-full transition-colors"
                 :class="s.active ? 'bg-brand' : 'bg-card-2'"
                 @click="toggleActive(s)"

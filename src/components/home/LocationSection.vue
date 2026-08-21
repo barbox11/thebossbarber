@@ -1,18 +1,36 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useCatalogStore } from '@/stores/catalog'
+import { publicApi } from '@/services/api'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import BusinessMap from '@/components/home/BusinessMap.vue'
+import { formatTime12, WEEKDAYS_SHORT } from '@/utils/format'
+import type { BusinessHour } from '@/types'
 
 const catalog = useCatalogStore()
+const hours = ref<BusinessHour[]>([])
+
+const hoursLabel = computed(() => {
+  const openHours = hours.value
+    .filter((day) => day.isOpen)
+    .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+    .map((day) => `${WEEKDAYS_SHORT[day.dayOfWeek]} ${formatTime12(day.openTime)}–${formatTime12(day.closeTime)}`)
+
+  return openHours.length ? openHours.join(' · ') : 'Horario no disponible'
+})
 
 function mapsUrl(): string {
   const addr = catalog.settings?.address
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr ?? '')}`
 }
 
-onMounted(() => {
-  if (!catalog.loaded) catalog.load()
+onMounted(async () => {
+  if (!catalog.loaded) await catalog.load()
+  try {
+    hours.value = await publicApi.getHours()
+  } catch {
+    hours.value = []
+  }
 })
 </script>
 
@@ -44,7 +62,7 @@ onMounted(() => {
             </span>
             <div>
               <p class="font-bold uppercase tracking-[0.14em] text-white">Horario de atención</p>
-              <p class="mt-1 text-muted">Lun–Vie 9:00–19:00 · Sáb 9:00–17:00 · Dom cerrado</p>
+              <p class="mt-1 text-muted">{{ hoursLabel }}</p>
             </div>
           </li>
           <li class="flex items-start gap-4">
@@ -70,7 +88,7 @@ onMounted(() => {
       </div>
 
       <div class="reveal lg:col-span-7">
-        <div class="crop-frame relative h-full min-h-[420px] overflow-hidden border border-line bg-ink-2 lg:min-h-[520px]">
+        <div class="crop-frame relative h-full min-h-105 overflow-hidden border border-line bg-ink-2 lg:min-h-130">
           <BusinessMap />
         </div>
       </div>

@@ -105,6 +105,7 @@ onMounted(load)
               type="button"
               role="switch"
               :aria-checked="day.isOpen"
+              :disabled="saving"
               class="relative h-6 w-11 rounded-full transition-colors"
               :class="day.isOpen ? 'bg-brand' : 'bg-card-2'"
               @click="toggleDay(day)"

@@ -117,7 +117,7 @@ const statItems = computed(() => [
 <style scoped>
 .hero-anim {
   opacity: 0;
-  animation: hero-enter 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hero-enter 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes hero-enter {
   from {

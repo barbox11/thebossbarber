@@ -59,6 +59,7 @@ export interface Store {
   updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<AppointmentRecord | null>
   createBooking(input: BookingInput): Promise<BookingResult>
   listCustomers(): Promise<
-    Array<import('./types').CustomerRecord & { bookingsCount: number; totalSpent: number; lastBookingAt: Date | null }>
+    Array<import('./types').CustomerRecord & { bookingsCount: number; totalSpent: number; lastBookingAt: Date | null; canDelete: boolean }>
   >
+  deleteCustomer(id: string): Promise<'deleted' | 'not_found' | 'not_completed'>
 }

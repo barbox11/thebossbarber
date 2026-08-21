@@ -45,6 +45,7 @@ export interface CustomerWithStats extends Customer {
   bookingsCount: number
   totalSpent: number
   lastBookingAt: string | null
+  canDelete: boolean
 }
 
 export interface CreateBlockedTimeInput {

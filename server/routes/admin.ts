@@ -184,8 +184,18 @@ router.get('/customers', async (_req, res) => {
       bookingsCount: c.bookingsCount,
       totalSpent: c.totalSpent,
       lastBookingAt: c.lastBookingAt ? c.lastBookingAt.toISOString() : null,
+      canDelete: c.canDelete,
     })),
   )
+})
+
+router.delete('/customers/:id', async (req, res) => {
+  const result = await getStore().deleteCustomer(req.params.id)
+  if (result === 'not_found') return res.status(404).json({ error: 'Cliente no encontrado.' })
+  if (result === 'not_completed') {
+    return res.status(409).json({ error: 'Solo puedes eliminar clientes con todas sus citas completadas.' })
+  }
+  res.json({ ok: true })
 })
 
 router.get('/settings', async (_req, res) => {

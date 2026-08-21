@@ -11,7 +11,9 @@ onMounted(() => {
   setupScrollReveal()
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      booting.value = false
+      window.setTimeout(() => {
+        booting.value = false
+      }, 220)
     })
   })
 })
@@ -45,7 +47,7 @@ watch(
 <style scoped>
 .boot-enter-active,
 .boot-leave-active {
-  transition: opacity 0.45s ease;
+  transition: opacity 0.7s ease;
 }
 .boot-leave-to {
   opacity: 0;

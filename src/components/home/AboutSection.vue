@@ -6,8 +6,8 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 const catalog = useCatalogStore()
 const barberName = ref('El Maestro Barbero')
 
-onMounted(() => {
-  if (!catalog.loaded) catalog.load()
+onMounted(async () => {
+  if (!catalog.loaded) await catalog.load()
   barberName.value = catalog.settings?.barberName ?? barberName.value
 })
 

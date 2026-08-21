@@ -331,7 +331,24 @@ export class PrismaStore implements Store {
       bookingsCount: c.appointments.length,
       totalSpent: c.appointments.reduce((sum, a) => sum + a.priceAtBooking, 0),
       lastBookingAt: c.appointments[0]?.slotStart ?? null,
+      canDelete: c.appointments.length > 0 && c.appointments.every((a) => a.status === 'COMPLETED'),
     }))
+  }
+
+  async deleteCustomer(id: string): Promise<'deleted' | 'not_found' | 'not_completed'> {
+    return prisma.$transaction(async (tx) => {
+      const customer = await tx.customer.findUnique({
+        where: { id },
+        include: { appointments: { select: { status: true } } },
+      })
+      if (!customer) return 'not_found'
+      if (customer.appointments.length === 0 || customer.appointments.some((a) => a.status !== 'COMPLETED')) {
+        return 'not_completed'
+      }
+      await tx.appointment.deleteMany({ where: { customerId: id } })
+      await tx.customer.delete({ where: { id } })
+      return 'deleted'
+    })
   }
 }
 
