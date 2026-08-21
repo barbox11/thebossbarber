@@ -16,9 +16,11 @@ export const useCatalogStore = defineStore('catalog', () => {
   )
 
   const fallbackServices: Service[] = [
-    { id: 'demo-corte', name: 'Corte', description: 'Corte clásico o moderno con acabado de precisión.', price: 20000, durationMin: 45, active: true, sortOrder: 1 },
-    { id: 'demo-cortebarba', name: 'Corte + Barba', description: 'Corte completo más perfilado de barba con toalla caliente.', price: 40000, durationMin: 60, active: true, sortOrder: 2 },
-    { id: 'demo-barba', name: 'Barba', description: 'Perfilado, arreglo y cuidado de barba con productos premium.', price: 20000, durationMin: 30, active: true, sortOrder: 3 },
+    { id: 'corte', name: 'Corte', description: 'Corte clásico o moderno con asesoría de estilo, lavado y acabado de precisión.', price: 20000, durationMin: 45, active: true, sortOrder: 1 },
+    { id: 'corte-barba', name: 'Corte + Barba', description: 'Corte completo más perfilado de barba con toalla caliente y acabado premium.', price: 25000, durationMin: 60, active: true, sortOrder: 2 },
+    { id: 'diseno-barba', name: 'Diseño de barba', description: 'Perfilado, arreglo y cuidado de barba con productos premium.', price: 10000, durationMin: 30, active: true, sortOrder: 3 },
+    { id: 'corte-puntas', name: 'Corte de puntas', description: 'Retoque de puntas y acabado ligero.', price: 10000, durationMin: 15, active: true, sortOrder: 4 },
+    { id: 'diseño-cejas', name: 'Diseño de cejas', description: 'Diseño y arreglo de cejas con técnica premium.', price: 5000, durationMin: 10, active: true, sortOrder: 5 },
   ]
 
   const fallbackSettings: BusinessSettings = {

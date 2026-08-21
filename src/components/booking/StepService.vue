@@ -13,11 +13,11 @@ const emit = defineEmits<{ (e: 'select', service: Service): void }>()
 
 <template>
   <div>
-    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
       <li v-for="service in services" :key="service.id">
         <button
           type="button"
-          class="group relative flex h-full w-full flex-col gap-4 border p-5 text-left transition-all duration-200 active:scale-[0.99]"
+          class="group relative flex h-full w-full flex-col gap-4 border p-4 text-left transition-all duration-200 active:scale-[0.99]"
           :class="
             selectedId === service.id
               ? 'border-brand bg-card-2'
@@ -50,3 +50,6 @@ const emit = defineEmits<{ (e: 'select', service: Service): void }>()
     </ul>
   </div>
 </template>
+
+<style scoped>
+</style>

@@ -22,10 +22,10 @@ function bookService(service: Service) {
 </script>
 
 <template>
-  <section id="servicios" class="bg-ink-2 py-20 md:py-28">
+  <section id="servicios" class="bg-ink py-16 md:py-24">
     <div class="container-x">
-      <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div class="reveal">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
           <p class="eyebrow">Menú de especialidades</p>
           <h2 class="mt-4 text-display text-5xl text-pure sm:text-6xl">
             Servicios<span class="text-brand-hover">.</span>
@@ -43,7 +43,7 @@ function bookService(service: Service) {
         </RouterLink>
       </div>
 
-      <div class="mt-12 border-t border-line">
+      <div class="mt-12 divide-y divide-line">
         <div v-if="loading" class="divide-y divide-line">
           <div v-for="i in 3" :key="i" class="flex items-center justify-between py-8">
             <div class="h-6 w-40 animate-pulse rounded bg-card" />
@@ -55,12 +55,12 @@ function bookService(service: Service) {
           <article
             v-for="service in services"
             :key="service.id"
-            class="group grid gap-3 border-b border-line py-8 transition-colors hover:bg-card/40 md:grid-cols-12 md:items-center md:gap-6 md:px-4 md:hover:px-6"
+            class="group grid gap-3 border-b border-line py-8 transition-colors hover:bg-card/40 md:grid-cols-2 md:items-center md:gap-6 md:px-4 md:hover:px-6"
           >
             <div class="md:col-span-1">
               <span class="h-1 w-8 bg-line transition-colors group-hover:bg-brand" aria-hidden="true" />
             </div>
-            <h3 class="font-display text-3xl uppercase tracking-wide text-pure transition-colors group-hover:text-brand-hover md:col-span-4 sm:text-4xl">
+            <h3 class="font-display text-3xl uppercase tracking-wide text-pure transition-colors group-hover:text-brand-hover md:col-span-2 sm:text-4xl">
               {{ service.name }}
             </h3>
             <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted md:col-span-2">
@@ -92,3 +92,6 @@ function bookService(service: Service) {
     </div>
   </section>
 </template>
+
+<style scoped>
+</style>
