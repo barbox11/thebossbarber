@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useCatalogStore } from '@/stores/catalog'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { toWhatsAppNumber } from '@/utils/whatsapp'
+import { BUSINESS_WHATSAPP_NUMBER, toWhatsAppNumber } from '@/utils/whatsapp'
 
 const catalog = useCatalogStore()
 const settings = ref(catalog.settings)
@@ -56,7 +56,7 @@ onMounted(() => {
             </a>
             <a
               v-if="settings?.whatsapp"
-              :href="`https://wa.me/${toWhatsAppNumber(settings.whatsapp)}`"
+              :href="`https://wa.me/${toWhatsAppNumber(BUSINESS_WHATSAPP_NUMBER)}`"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"

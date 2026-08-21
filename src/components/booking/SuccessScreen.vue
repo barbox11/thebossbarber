@@ -2,14 +2,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookingStore } from '@/stores/booking'
-import { useCatalogStore } from '@/stores/catalog'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { downloadIcs } from '@/utils/ics'
 import { formatCOP, formatDateFull, formatTime12, minutesToLabel } from '@/utils/format'
-import { toWhatsAppNumber } from '@/utils/whatsapp'
+import { BUSINESS_WHATSAPP_NUMBER, toWhatsAppNumber } from '@/utils/whatsapp'
 
 const store = useBookingStore()
-const catalog = useCatalogStore()
 const router = useRouter()
 
 const service = computed(() => store.state.service)
@@ -18,7 +16,7 @@ const time = computed(() => store.state.time ?? '')
 
 function whatsappLink(): string | null {
   const s = service.value
-  const wa = catalog.settings?.whatsapp || '3217650814'
+  const wa = BUSINESS_WHATSAPP_NUMBER
   if (!s || !wa) return null
   const msg = [
     'Hola The Boss Barber,',

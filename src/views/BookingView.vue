@@ -5,17 +5,16 @@ import AppFooter from '@/components/layout/AppFooter.vue'
 import BookingWizard from '@/components/booking/BookingWizard.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useCatalogStore } from '@/stores/catalog'
-import { toWhatsAppNumber } from '@/utils/whatsapp'
+import { BUSINESS_WHATSAPP_NUMBER, toWhatsAppNumber } from '@/utils/whatsapp'
 
 const catalog = useCatalogStore()
-const whatsappNumber = ref(toWhatsAppNumber('3217650814'))
+const whatsappNumber = ref(toWhatsAppNumber(BUSINESS_WHATSAPP_NUMBER))
 const whatsappMessage = encodeURIComponent('Hola The Boss Barber, quiero información sobre sus servicios.')
 
 onMounted(() => {
   window.scrollTo({ top: 0 })
   catalog.load().then(() => {
-    const configuredNumber = catalog.settings?.whatsapp && toWhatsAppNumber(catalog.settings.whatsapp)
-    if (configuredNumber) whatsappNumber.value = configuredNumber
+    whatsappNumber.value = toWhatsAppNumber(BUSINESS_WHATSAPP_NUMBER)
   })
 })
 </script>
